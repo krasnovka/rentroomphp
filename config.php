@@ -10,7 +10,7 @@ $db_name = 'varo_db';
 $db_user = 'root';
 $db_pass = '';
 
-// Change DB settings here for your XAMPP MySQL
+// Change DB settings here 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
