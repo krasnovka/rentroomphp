@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // my_bookings.php
 
 require_once 'auth.php';
@@ -37,7 +37,6 @@ include 'header.php';
                 <th>Action</th>
             </tr>
             <?php foreach ($bookings as $row): ?>
-                <?php // Visual status label for each booking ?>
                 <?php $status_data = get_booking_status_data($row['booking_date'], $row['end_time'], $row['status']); ?>
                 <tr>
                     <td><?php echo e($row['id']); ?></td>
