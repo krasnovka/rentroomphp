@@ -95,6 +95,7 @@ include 'header.php';
     <h2>Quick Actions</h2>
     <div class="quick-links">
         <a href="rooms.php" class="quick-link">Open room list</a>
+        <a href="booking_calendar.php" class="quick-link">Open booking calendar</a>
         <a href="about.php" class="quick-link">Open about page</a>
         <?php if (is_logged_in()): ?>
             <a href="my_bookings.php" class="quick-link">Open my bookings</a>

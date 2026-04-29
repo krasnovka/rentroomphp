@@ -26,6 +26,18 @@ if (!$room) {
     redirect('rooms.php');
 }
 
+// Date from calendar page
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $date_from_get = trim($_GET['date'] ?? '');
+    $date_obj = DateTime::createFromFormat('Y-m-d', $date_from_get);
+
+    if ($date_from_get !== '' && $date_obj && $date_obj->format('Y-m-d') === $date_from_get) {
+        $booking_date = $date_from_get;
+    } else {
+        $booking_date = date('Y-m-d');
+    }
+}
+
 // Booking form submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $booking_date = trim($_POST['booking_date'] ?? '');
@@ -102,6 +114,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Busy slots for selected date
+$busy_date = $booking_date !== '' ? $booking_date : date('Y-m-d');
+$busy_date_obj = DateTime::createFromFormat('Y-m-d', $busy_date);
+
+if (!$busy_date_obj || $busy_date_obj->format('Y-m-d') !== $busy_date) {
+    $busy_date = date('Y-m-d');
+}
+
+$sql = "SELECT bookings.*, users.name AS user_name
+        FROM bookings
+        INNER JOIN users ON bookings.user_id = users.id
+        WHERE bookings.room_id = ?
+        AND bookings.booking_date = ?
+        AND bookings.status = 'active'
+        ORDER BY bookings.start_time ASC";
+$stmt = $conn->prepare($sql);
+$stmt->execute([$room_id, $busy_date]);
+$busy_slots = $stmt->fetchAll();
+
 include 'header.php';
 ?>
 
@@ -129,6 +160,40 @@ include 'header.php';
                 <span>Booking Rules</span>
                 <strong>Choose future date and time. End time must be later than start time.</strong>
             </div>
+        </div>
+
+        <!-- Busy times for this room -->
+        <div class="busy-box">
+            <div class="busy-box-head">
+                <div>
+                    <h3>Busy times</h3>
+                    <p class="small-text">Selected date: <?php echo e($busy_date); ?></p>
+                </div>
+                <a href="booking_calendar.php?room_id=<?php echo e($room_id); ?>&month=<?php echo e(substr($busy_date, 0, 7)); ?>" class="btn btn-secondary">Calendar</a>
+            </div>
+
+            <form method="get" class="mini-date-form">
+                <input type="hidden" name="room_id" value="<?php echo e($room_id); ?>">
+                <input type="date" name="date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo e($busy_date); ?>">
+                <button type="submit">Check</button>
+            </form>
+
+            <?php if ($busy_slots): ?>
+                <div class="busy-slots">
+                    <?php foreach ($busy_slots as $slot): ?>
+                        <div class="busy-slot">
+                            <strong><?php echo e(substr($slot['start_time'], 0, 5)); ?>-<?php echo e(substr($slot['end_time'], 0, 5)); ?></strong>
+                            <?php if (is_admin()): ?>
+                                <span><?php echo e($slot['user_name']); ?></span>
+                            <?php else: ?>
+                                <span>Booked</span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="calendar-free-note">No bookings for this room on this date.</p>
+            <?php endif; ?>
         </div>
     </div>
 

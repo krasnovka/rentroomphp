@@ -32,6 +32,7 @@ $message = get_message();
             <nav class="menu">
                 <a href="index.php" class="<?php echo $current_page === 'index.php' ? 'active' : ''; ?>">Home</a>
                 <a href="rooms.php" class="<?php echo $current_page === 'rooms.php' ? 'active' : ''; ?>">Rooms</a>
+                <a href="booking_calendar.php" class="<?php echo $current_page === 'booking_calendar.php' ? 'active' : ''; ?>">Calendar</a>
                 <a href="feedback.php" class="<?php echo $current_page === 'feedback.php' ? 'active' : ''; ?>">Feedback</a>
                 <a href="about.php" class="<?php echo $current_page === 'about.php' ? 'active' : ''; ?>">About</a>
                 <?php if (is_logged_in()): ?>

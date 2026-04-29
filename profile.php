@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // profile.php
 
 require_once 'auth.php';
@@ -237,14 +237,14 @@ include 'header.php';
 
 <!-- Edit form and recent bookings -->
 <div class="grid-two">
-        <div class="card glass-card fade-card delay-3">
-            <h2>Edit Profile</h2>
+    <div class="card glass-card fade-card delay-3">
+        <h2>Edit Profile</h2>
 
-            <?php if ($errors): ?>
-                <div class="message error">
-                    <?php foreach ($errors as $error): ?>
-                        <div><?php echo e($error); ?></div>
-                    <?php endforeach; ?>
+        <?php if ($errors): ?>
+            <div class="message error">
+                <?php foreach ($errors as $error): ?>
+                    <div><?php echo e($error); ?></div>
+                <?php endforeach; ?>
             </div>
         <?php endif; ?>
 
@@ -276,7 +276,6 @@ include 'header.php';
         <?php if ($recent_bookings): ?>
             <div class="recent-bookings">
                 <?php foreach ($recent_bookings as $row): ?>
-                    <?php // Status label for recent profile booking ?>
                     <?php $status_data = get_booking_status_data($row['booking_date'], $row['end_time'], $row['status']); ?>
                     <div class="recent-booking-item">
                         <div>

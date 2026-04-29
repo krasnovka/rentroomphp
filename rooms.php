@@ -74,6 +74,7 @@ include 'header.php';
                             <?php if (is_logged_in()): ?>
                                 <a href="book_room.php?room_id=<?php echo e($row['id']); ?>" class="btn">Book</a>
                             <?php endif; ?>
+                            <a href="booking_calendar.php?room_id=<?php echo e($row['id']); ?>" class="btn btn-secondary">Calendar</a>
                             <?php if (is_admin()): ?>
                                 <a href="edit_room.php?id=<?php echo e($row['id']); ?>" class="btn btn-secondary">Edit</a>
                                 <a href="delete_room.php?id=<?php echo e($row['id']); ?>" class="btn btn-danger" onclick="return confirm('Delete this room?')">Delete</a>
