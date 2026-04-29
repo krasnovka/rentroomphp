@@ -41,7 +41,10 @@ $message = get_message();
                     <?php if (is_admin()): ?>
                         <a href="admin_panel.php" class="<?php echo $current_page === 'admin_panel.php' ? 'active' : ''; ?>">Admin Panel</a>
                     <?php endif; ?>
-                    <a href="logout.php">Logout</a>
+                    <form method="post" action="logout.php" class="menu-form">
+                        <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>">
+                        <button type="submit">Logout</button>
+                    </form>
                 <?php else: ?>
                     <a href="login.php" class="<?php echo $current_page === 'login.php' ? 'active' : ''; ?>">Login</a>
                     <a href="register.php" class="<?php echo $current_page === 'register.php' ? 'active' : ''; ?>">Register</a>

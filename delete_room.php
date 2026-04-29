@@ -3,7 +3,14 @@
 
 require_once 'admin_auth.php';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    set_message('Invalid delete request.', 'error');
+    redirect('admin_panel.php');
+}
+
+check_csrf_token();
+
+$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
 if ($id <= 0) {
     set_message('Room not found.', 'error');

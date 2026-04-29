@@ -51,7 +51,11 @@ include 'header.php';
                     </td>
                     <td>
                         <?php if ($row['status'] === 'active'): ?>
-                            <a href="cancel_booking.php?id=<?php echo e($row['id']); ?>" class="btn btn-danger" onclick="return confirm('Cancel this booking?')">Cancel</a>
+                            <form method="post" action="cancel_booking.php" class="inline-form" onsubmit="return confirm('Cancel this booking?')">
+                                <input type="hidden" name="id" value="<?php echo e($row['id']); ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>">
+                                <button type="submit" class="btn btn-danger">Cancel</button>
+                            </form>
                         <?php else: ?>
                             -
                         <?php endif; ?>

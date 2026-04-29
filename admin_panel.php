@@ -57,7 +57,11 @@ include 'header.php';
                     <td>
                         <div class="actions">
                             <a href="edit_room.php?id=<?php echo e($row['id']); ?>" class="btn btn-secondary">Edit</a>
-                            <a href="delete_room.php?id=<?php echo e($row['id']); ?>" class="btn btn-danger" onclick="return confirm('Delete this room?')">Delete</a>
+                            <form method="post" action="delete_room.php" class="inline-form" onsubmit="return confirm('Delete this room?')">
+                                <input type="hidden" name="id" value="<?php echo e($row['id']); ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>
