@@ -73,7 +73,11 @@ include 'header.php';
     <div class="section-head">
         <div>
             <h2>Calendar Filters</h2>
+<<<<<<< Updated upstream
             <p class="small-text">Choose a month and filter by room if needed.</p>
+=======
+            <p class="small-text">Choose a month and, if needed, filter by one room.</p>
+>>>>>>> Stashed changes
         </div>
     </div>
 
