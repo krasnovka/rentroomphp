@@ -7,11 +7,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Database settings
-$host = 'localhost';
-$db_name = 'varo_db';
-$db_user = 'root';
-$db_pass = '';
-
+$host = 'sql209.infinityfree.com    ';
+$db_name = 'if0_41844343_varoo1';
+$db_user = 'if0_41844343';
+$db_pass = 'eQDqTS5LNRHn0HD'
 // Change DB settings here for your XAMPP MySQL
 try {
     $conn = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
