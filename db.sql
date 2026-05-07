@@ -1,8 +1,4 @@
-﻿-- db.sql
-CREATE DATABASE IF NOT EXISTS varo_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE varo_db;
-
-DROP TABLE IF EXISTS feedback;
+﻿DROP TABLE IF EXISTS feedback;
 DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS rooms;
 DROP TABLE IF EXISTS users;
