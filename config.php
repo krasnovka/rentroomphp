@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Database settings
-$host = 'sql209.infinityfree.com    ';
+$host = 'sql209.infinityfree.com';
 $db_name = 'if0_41844343_varoo1';
 $db_user = 'if0_41844343';
 $db_pass = 'eQDqTS5LNRHn0HD'
