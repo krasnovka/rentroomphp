@@ -12,7 +12,7 @@ $errors = [];
 
 // Load selected room
 if ($room_id <= 0) {
-    set_message('Room not found.', 'error');
+    set_message('Huonetta ei löytynyt.', 'error');
     redirect('rooms.php');
 }
 
@@ -22,7 +22,7 @@ $stmt->execute([$room_id]);
 $room = $stmt->fetch();
 
 if (!$room) {
-    set_message('Room not found.', 'error');
+    set_message('Huonetta ei löytynyt.', 'error');
     redirect('rooms.php');
 }
 
@@ -138,9 +138,9 @@ include 'header.php';
 
 <!-- Page heading -->
 <div class="page-intro fade-card">
-    <span class="section-tag">Booking</span>
-    <h1>Book a room</h1>
-    <p>Choose date and time for your booking and confirm the reservation.</p>
+    <span class="section-tag">Varaus</span>
+    <h1>Varaa huone</h1>
+    <p>Valitse päivämäärä ja aika varauksellesi ja vahvista varaus.</p>
 </div>
 
 <!-- Room info and booking form -->
@@ -149,56 +149,56 @@ include 'header.php';
         <h2><?php echo e($room['name']); ?></h2>
         <div class="room-summary">
             <div class="room-summary-item">
-                <span>Description</span>
+                <span>Kuvaus</span>
                 <strong><?php echo e($room['description']); ?></strong>
             </div>
             <div class="room-summary-item">
-                <span>Capacity</span>
-                <strong><?php echo e($room['capacity']); ?> people</strong>
+                <span>Henkilömäärä</span>
+                <strong><?php echo e($room['capacity']); ?> henkilöä</strong>
             </div>
             <div class="room-summary-item">
-                <span>Booking Rules</span>
-                <strong>Choose future date and time. End time must be later than start time.</strong>
+                <span>Varauksen säännöt</span>
+                <strong>Valitse tuleva päivämäärä ja aika. Loppuajan täytyy olla myöhemmin kuin alkuajan.</strong>
             </div>
         </div>
 
         <!-- Busy times for this room -->
         <div class="busy-box">
-            <div class="busy-box-head">
-                <div>
-                    <h3>Busy times</h3>
-                    <p class="small-text">Selected date: <?php echo e($busy_date); ?></p>
-                </div>
-                <a href="booking_calendar.php?room_id=<?php echo e($room_id); ?>&month=<?php echo e(substr($busy_date, 0, 7)); ?>" class="btn btn-secondary">Calendar</a>
-            </div>
-
-            <form method="get" class="mini-date-form">
-                <input type="hidden" name="room_id" value="<?php echo e($room_id); ?>">
-                <input type="date" name="date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo e($busy_date); ?>">
-                <button type="submit">Check</button>
-            </form>
-
-            <?php if ($busy_slots): ?>
-                <div class="busy-slots">
-                    <?php foreach ($busy_slots as $slot): ?>
-                        <div class="busy-slot">
-                            <strong><?php echo e(substr($slot['start_time'], 0, 5)); ?>-<?php echo e(substr($slot['end_time'], 0, 5)); ?></strong>
-                            <?php if (is_admin()): ?>
-                                <span><?php echo e($slot['user_name']); ?></span>
-                            <?php else: ?>
-                                <span>Booked</span>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php else: ?>
-                <p class="calendar-free-note">No bookings for this room on this date.</p>
-            <?php endif; ?>
+    <div class="busy-box-head">
+        <div>
+            <h3>Varatut ajat</h3>
+            <p class="small-text">Valittu päivä: <?php echo e($busy_date); ?></p>
         </div>
+        <a href="booking_calendar.php?room_id=<?php echo e($room_id); ?>&month=<?php echo e(substr($busy_date, 0, 7)); ?>" class="btn btn-secondary">Kalenteri</a>
     </div>
 
+    <form method="get" class="mini-date-form">
+        <input type="hidden" name="room_id" value="<?php echo e($room_id); ?>">
+        <input type="date" name="date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo e($busy_date); ?>">
+        <button type="submit">Tarkista</button>
+  </form>
+
+<?php if ($busy_slots): ?>
+    <div class="busy-slots">
+        <?php foreach ($busy_slots as $slot): ?>
+            <div class="busy-slot">
+                <strong><?php echo e(substr($slot['start_time'], 0, 5)); ?>-<?php echo e(substr($slot['end_time'], 0, 5)); ?></strong>
+                <?php if (is_admin()): ?>
+                    <span><?php echo e($slot['user_name']); ?></span>
+                <?php else: ?>
+                    <span>Varattu</span>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php else: ?>
+    <p class="calendar-free-note">Ei varauksia tälle huoneelle tälle päivälle.</p>
+<?php endif; ?>
+</div>
+</div>
+
     <div class="card glass-card fade-card delay-1">
-        <h2>Booking Form</h2>
+        <h2>Varauslomake</h2>
 
         <?php if ($errors): ?>
             <div class="message error">
@@ -218,19 +218,19 @@ include 'header.php';
 
             <div class="grid-two">
                 <div class="form-group">
-                    <label for="start_time">Start Time</label>
+                    <label for="start_time">Aloitusaika</label>
                     <input type="time" id="start_time" name="start_time" value="<?php echo e($start_time); ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="end_time">End Time</label>
+                    <label for="end_time">Päättymisaika</label>
                     <input type="time" id="end_time" name="end_time" value="<?php echo e($end_time); ?>" required>
                 </div>
             </div>
 
             <div class="actions">
-                <button type="submit">Create Booking</button>
-                <a href="rooms.php" class="btn btn-secondary">Back</a>
+                <button type="submit">Tee varaus</button>
+                <a href="rooms.php" class="btn btn-secondary">Takaisin</a>
             </div>
         </form>
     </div>

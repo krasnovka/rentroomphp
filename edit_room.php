@@ -7,7 +7,7 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : (int)($_POST['id'] ?? 0);
 $errors = [];
 
 if ($id <= 0) {
-    set_message('Room not found.', 'error');
+    set_message('Huoneet ei löydy.', 'error');
     redirect('admin_panel.php');
 }
 
@@ -17,7 +17,7 @@ $stmt->execute([$id]);
 $room = $stmt->fetch();
 
 if (!$room) {
-    set_message('Room not found.', 'error');
+    set_message('Huonetta ei löytynyt.', 'error');
     redirect('admin_panel.php');
 }
 
@@ -31,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $capacity = trim($_POST['capacity'] ?? '');
 
     if ($name === '' || $description === '' || $capacity === '') {
-        $errors[] = 'All fields are required.';
+        $errors[] = 'Kaikki kentät ovat pakollisia.';
     }
 
     if ($capacity !== '' && (!is_numeric($capacity) || (int)$capacity <= 0)) {
-        $errors[] = 'Capacity must be a positive number.';
+        $errors[] = 'Kapasiteetin täytyy olla positiivinen numero.';
     }
 
     if (!$errors) {
@@ -43,16 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare($sql);
         $stmt->execute([$name, $description, (int)$capacity, $id]);
 
-        set_message('Room updated successfully.', 'success');
+        set_message('Huone päivitetty onnistuneesti.', 'success');
         redirect('admin_panel.php');
     }
 }
-
 include 'header.php';
 ?>
 
 <div class="card">
-    <h1>Edit Room</h1>
+    <h1>Muokkaa huonetta</h1>
 
     <?php if ($errors): ?>
         <div class="message error">
@@ -66,22 +65,22 @@ include 'header.php';
         <input type="hidden" name="id" value="<?php echo e($id); ?>">
 
         <div class="form-group">
-            <label for="name">Room Name</label>
+            <label for="name">Huoneen nimi</label>
             <input type="text" id="name" name="name" value="<?php echo e($name); ?>">
         </div>
 
         <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">Kuvaus</label>
             <textarea id="description" name="description"><?php echo e($description); ?></textarea>
         </div>
 
         <div class="form-group">
-            <label for="capacity">Capacity</label>
+            <label for="capacity">Kapasiteetti</label>
             <input type="number" id="capacity" name="capacity" min="1" value="<?php echo e($capacity); ?>">
         </div>
 
-        <button type="submit">Save Changes</button>
-        <a href="admin_panel.php" class="btn btn-secondary">Back</a>
+        <button type="submit">Tallenna muutokset</button>
+        <a href="admin_panel.php" class="btn btn-secondary">Takaisin</a>
     </form>
 </div>
 

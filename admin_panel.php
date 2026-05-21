@@ -26,17 +26,17 @@ include 'header.php';
 <div class="page-intro fade-card">
     <span class="section-tag">Admin</span>
     <h1>Admin panel</h1>
-    <p>Manage rooms and review all bookings in one place.</p>
+    <p>Hallitse huoneita ja tarkista kaikki varaukset yhdessä paikassa.</p>
 </div>
 
 <!-- Room management table -->
 <div class="card glass-card fade-card delay-1">
     <div class="section-head">
         <div>
-            <h2>Rooms</h2>
-            <p class="small-text">Add, edit and remove rooms.</p>
+            <h2>Huoneet</h2>
+            <p class="small-text">Lisää, muokkaa ja poista huoneita.</p>
         </div>
-        <a href="add_room.php" class="btn">Add Room</a>
+        <a href="add_room.php" class="btn">Lisää huone</a>
     </div>
 
     <?php if ($rooms): ?>

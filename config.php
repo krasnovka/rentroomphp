@@ -7,11 +7,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Database settings
-$host = 'sql209.infinityfree.com';
-$db_name = 'if0_41844343_varoo1';
-$db_user = 'if0_41844343';
-$db_pass = 'eQDqTS5LNRHn0HD'
-// Change DB settings here for your XAMPP MySQL
+$host = 'localhost';
+$db_name = 'varo_db';
+$db_user = 'root';
+$db_pass = '';
+
+// Change DB settings here for your XAMPP MySQL or hosting
 try {
     $conn = new PDO("mysql:host=$host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -20,20 +21,26 @@ try {
     die('Database connection error: ' . $e->getMessage());
 }
 
-// Safe output helper
+// Шпаргалка: e() нужна для безопасного вывода текста на страницу.
+// Она превращает специальные символы в безопасный HTML, чтобы пользователь не мог вставить вредный код.
+// Пример: echo e($user['name']);
 function e($text)
 {
     return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8');
 }
 
-// Redirect helper
+// Шпаргалка: redirect() переносит пользователя на другую страницу.
+// После header() обязательно делаем exit, чтобы старый код дальше не выполнялся.
+// Пример: redirect('login.php');
 function redirect($page)
 {
     header('Location: ' . $page);
     exit;
 }
 
-// CSRF token for forms with important actions
+// Шпаргалка: csrf_token() создает защитный токен для важных форм.
+// Этот токен нужен, чтобы чужой сайт не смог отправить форму от имени пользователя.
+// Пример: в форме добавляют hidden input с value csrf_token().
 function csrf_token()
 {
     if (empty($_SESSION['csrf_token'])) {
@@ -43,7 +50,9 @@ function csrf_token()
     return $_SESSION['csrf_token'];
 }
 
-// Check CSRF token from POST form
+// Шпаргалка: check_csrf_token() проверяет защитный токен из POST-формы.
+// Если токен неправильный или пустой, действие останавливается и пользователь уходит на главную.
+// Используется перед удалением, отменой брони, выходом и другими важными действиями.
 function check_csrf_token()
 {
     $token = $_POST['csrf_token'] ?? '';
@@ -54,19 +63,25 @@ function check_csrf_token()
     }
 }
 
-// Check if user is logged in
+// Шпаргалка: is_logged_in() проверяет, есть ли пользователь в сессии.
+// Если $_SESSION['user'] существует, значит пользователь вошел в аккаунт.
+// Пример: if (is_logged_in()) { ... }
 function is_logged_in()
 {
     return isset($_SESSION['user']);
 }
 
-// Check admin role
+// Шпаргалка: is_admin() проверяет роль пользователя.
+// Возвращает true только если пользователь вошел и его role равен admin.
+// Нужно для защиты админских страниц.
 function is_admin()
 {
     return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
 }
 
-// Save flash message
+// Шпаргалка: set_message() сохраняет короткое сообщение в сессию.
+// Оно используется для сообщений типа "успешно" или "ошибка" после redirect.
+// Пример: set_message('Room added.', 'success');
 function set_message($text, $type = 'success')
 {
     $_SESSION['message'] = [
@@ -75,7 +90,9 @@ function set_message($text, $type = 'success')
     ];
 }
 
-// Read and clear flash message
+// Шпаргалка: get_message() берет сообщение из сессии и сразу удаляет его.
+// Поэтому сообщение показывается только один раз, а не на каждой странице.
+// Обычно вызывается в header.php.
 function get_message()
 {
     if (!isset($_SESSION['message'])) {
@@ -87,36 +104,39 @@ function get_message()
     return $message;
 }
 
-// Booking status helper for user and admin tables
+// Шпаргалка: get_booking_status_data() определяет красивый статус бронирования.
+// На вход получает дату, время окончания и status из базы данных.
+// Возвращает текст статуса и CSS-класс для таблиц бронирований.
 function get_booking_status_data($booking_date, $end_time, $status)
 {
-    if ($status === 'cancelled') {
-        return [
-            'label' => 'Cancelled',
-            'class' => 'status-cancelled'
-        ];
-    }
+    
+if ($status === 'cancelled') {
+    return [
+        'label' => 'Peruttu',
+        'class' => 'status-cancelled'
+    ];
+}
 
     $today = date('Y-m-d');
     $end_datetime = strtotime($booking_date . ' ' . $end_time);
     $now = time();
 
-    if ($booking_date > $today) {
-        return [
-            'label' => 'Upcoming',
-            'class' => 'status-upcoming'
-        ];
-    }
-
-    if ($booking_date === $today && $end_datetime !== false && $end_datetime >= $now) {
-        return [
-            'label' => 'Today',
-            'class' => 'status-today'
-        ];
-    }
-
+if ($booking_date > $today) {
     return [
-        'label' => 'Finished',
-        'class' => 'status-finished'
+        'label' => 'Tuleva',
+        'class' => 'status-upcoming'
     ];
+}
+
+if ($booking_date === $today && $end_datetime !== false && $end_datetime >= $now) {
+    return [
+        'label' => 'Tänään',
+        'class' => 'status-today'
+    ];
+}
+
+return [
+    'label' => 'Päättynyt',
+    'class' => 'status-finished'
+];
 }

@@ -35,7 +35,7 @@ include 'header.php';
 ?>
 
 <div class="card">
-    <h1>Add Room</h1>
+    <h1>Lisää huone</h1>
 
     <?php if ($errors): ?>
         <div class="message error">
@@ -46,23 +46,23 @@ include 'header.php';
     <?php endif; ?>
 
     <form method="post">
-        <div class="form-group">
-            <label for="name">Room Name</label>
-            <input type="text" id="name" name="name" value="<?php echo e($name); ?>">
-        </div>
+    <div class="form-group">
+        <label for="name">Huoneen nimi</label>
+        <input type="text" id="name" name="name" value="<?php echo e($name); ?>">
+    </div>
 
         <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description"><?php echo e($description); ?></textarea>
-        </div>
+    <label for="description">Kuvaus</label>
+    <textarea id="description" name="description"><?php echo e($description); ?></textarea>
+</div>
 
         <div class="form-group">
-            <label for="capacity">Capacity</label>
+            <label for="capacity">Määrä</label>
             <input type="number" id="capacity" name="capacity" min="1" value="<?php echo e($capacity); ?>">
         </div>
 
-        <button type="submit">Add Room</button>
-        <a href="admin_panel.php" class="btn btn-secondary">Back</a>
+        <button type="submit">Lisää huone</button>
+        <a href="admin_panel.php" class="btn btn-secondary">Takaisin</a>
     </form>
 </div>
 

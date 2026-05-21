@@ -7,7 +7,7 @@
     <div class="container footer-inner">
         <div>
             <strong>VARO</strong>
-            <p>Simple room booking system for local use.</p>
+            <p>Opiskelijoiden huonevaraus kirjastossa</p>
         </div>
 </footer>
 </body>

@@ -8,29 +8,30 @@ include 'header.php';
 
 <!-- Page heading -->
 <div class="page-intro fade-card">
-    <span class="section-tag">About</span>
-    <h1>About VARO</h1>
-    <p>VARO is a simple PHP and MySQL project for room booking. .</p>
+    <span class="section-tag">Info</span>
+    <h1>Info VARO</h1>
+    <p> Varo opiskelijoiden huonevaraus kirjastossa</p>
 </div>
 
 <!-- Main about blocks -->
 <div class="grid-two">
     <div class="card glass-card fade-card delay-1">
-        <h2>What The Project Does</h2>
+        <h2>Mitä projekti tekee</h2>
         <ul>
-            <li>User registration and login</li>
-            <li>Room list and booking form</li>
-            <li>User profile with photo and stats</li>
-            <li>Admin panel for room management</li>
+            <li>Käyttäjän rekisteröinti ja kirjautuminen</li>
+            <li>Huonelista ja varauslomake</li>
+            <li>Käyttäjäprofiili, jossa kuva ja tilastot</li>
+            <li>Admin-paneeli huoneiden hallintaan</li>
         </ul>
     </div>
+</div>
 
 
 <!-- Simple contact/info block -->
 <div class="card glass-card fade-card delay-3">
-    <h2>Contact</h2>
-    <p><strong>Project name:</strong> VARO</p>
-    <p><strong>Type:</strong> Student room booking system</p>
+    <h2>Yhteystiedot</h2>
+    <p><strong>Projektin nimi:</strong> VARO</p>
+    <p><strong>Tyyppi:</strong> Opiskelijoiden huonevarausjärjestelmä</p>
 </div>
 
 <?php include 'footer.php'; ?>

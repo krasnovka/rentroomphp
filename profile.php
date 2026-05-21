@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // profile.php
 
 require_once 'auth.php';
@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
 
     if ($name === '' || $email === '') {
-        $errors[] = 'Name and email are required.';
+        $errors[] = 'Nimi ja sähköposti ovat pakollisia.';
     }
 
     if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'Enter a valid email.';
+        $errors[] = 'Anna kelvollinen sähköposti.';
     }
 
     if (!$errors) {
@@ -42,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $same_email = $stmt->fetch();
 
         if ($same_email) {
-            $errors[] = 'This email is already used.';
+            $errors[] = 'Tämä sähköposti on jo käytössä.';
         } else {
             $new_avatar_url = $avatar_url;
 
             // Avatar upload block
             if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
                 if ($_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
-                    $errors[] = 'Error while uploading file.';
+                    $errors[] = 'Virhe tiedoston latauksessa.';
                 } else {
                     $file_name = $_FILES['avatar']['name'];
                     $file_size = (int)$_FILES['avatar']['size'];
@@ -58,15 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
                     if (!in_array($ext, $allowed, true)) {
-                        $errors[] = 'Allowed files: jpg, jpeg, png, gif, webp.';
+                        $errors[] = 'Sallitut tiedostot: jpg, jpeg, png, gif, webp.';
                     }
 
                     if ($file_size > 2 * 1024 * 1024) {
-                        $errors[] = 'File is too large. Max size is 2 MB.';
+                        $errors[] = 'Tiedosto on liian suuri. Maksimi 2 MB.';
                     }
 
                     if (!@getimagesize($tmp_name)) {
-                        $errors[] = 'Uploaded file must be an image.';
+                        $errors[] = 'Ladattavan tiedoston täytyy olla kuva.';
                     }
 
                     if (!$errors) {
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             $new_avatar_url = 'uploads/avatars/' . $new_file_name;
                         } else {
-                            $errors[] = 'Could not save uploaded image.';
+                            $errors[] = 'Kuvan tallennus epäonnistui.';
                         }
                     }
                 }
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user']['email'] = $email;
                 $_SESSION['user']['avatar_url'] = $new_avatar_url;
 
-                set_message('Profile updated.', 'success');
+                set_message('Profiili päivitetty.', 'success');
                 redirect('profile.php');
             }
         }
@@ -172,9 +172,9 @@ include 'header.php';
 
 <!-- Profile page heading -->
 <div class="page-intro fade-card">
-    <span class="section-tag">Profile</span>
-    <h1>Your personal profile</h1>
-    <p>Manage your account details, upload a photo and check your booking activity.</p>
+    <span class="section-tag">Profiili</span>
+    <h1>Henkilökohtainen profiili</h1>
+    <p>Hallitse tietojasi, lisää kuva ja tarkastele varauksiasi.</p>
 </div>
 
 <!-- Main profile cards -->
@@ -182,63 +182,59 @@ include 'header.php';
     <div class="card glass-card profile-card fade-card">
         <div class="profile-top">
             <?php if (!empty($user['avatar_url'])): ?>
-                <img src="<?php echo e($user['avatar_url']); ?>" alt="Profile Photo" class="profile-avatar">
+                <img src="<?php echo e($user['avatar_url']); ?>" alt="Profiilikuva" class="profile-avatar">
             <?php else: ?>
                 <div class="profile-avatar profile-avatar-placeholder"><?php echo e($avatar_text); ?></div>
             <?php endif; ?>
 
             <div>
                 <h1><?php echo e($user['name']); ?></h1>
-                <p class="profile-role"><?php echo e(ucfirst($user['role'])); ?> account</p>
-                <p class="small-text">Email: <?php echo e($user['email']); ?></p>
-                <p class="small-text">User ID: <?php echo e($user['id']); ?></p>
-                <p class="small-text">Joined: <?php echo e(date('Y-m-d', strtotime($user['created_at']))); ?></p>
+                <p class="profile-role"><?php echo e(ucfirst($user['role'])); ?> tili</p>
+                <p class="small-text">Sähköposti: <?php echo e($user['email']); ?></p>
+                <p class="small-text">Käyttäjä-ID: <?php echo e($user['id']); ?></p>
+                <p class="small-text">Liittynyt: <?php echo e(date('Y-m-d', strtotime($user['created_at']))); ?></p>
             </div>
         </div>
     </div>
 
     <div class="profile-side">
         <div class="card glass-card fade-card delay-1">
-            <h2>Stats</h2>
+            <h2>Tilastot</h2>
             <div class="profile-stats">
                 <div class="mini-card">
                     <strong><?php echo e($total_bookings); ?></strong>
-                    <span>Total bookings</span>
+                    <span>Varauksia yhteensä</span>
                 </div>
                 <div class="mini-card">
                     <strong><?php echo e($active_bookings); ?></strong>
-                    <span>Active bookings</span>
+                    <span>Aktiiviset varaukset</span>
                 </div>
                 <div class="mini-card">
                     <strong><?php echo e($cancelled_bookings); ?></strong>
-                    <span>Cancelled bookings</span>
+                    <span>Perutut varaukset</span>
                 </div>
             </div>
         </div>
 
         <div class="card glass-card fade-card delay-2">
-            <h2>More Info</h2>
-            <p><strong>Most used room:</strong> <?php echo e($top_room['name'] ?? 'No data yet'); ?></p>
-            <p><strong>Last booking:</strong>
+            <h2>Lisätiedot</h2>
+            <p><strong>Käytetyin huone:</strong> <?php echo e($top_room['name'] ?? 'Ei tietoja vielä'); ?></p>
+            <p><strong>Viime varaus:</strong>
                 <?php if ($last_booking): ?>
                     <?php echo e($last_booking['booking_date']); ?>,
                     <?php echo e(substr($last_booking['start_time'], 0, 5)); ?> - <?php echo e(substr($last_booking['end_time'], 0, 5)); ?>
                 <?php else: ?>
-                    No bookings yet
+                    Ei varauksia vielä
                 <?php endif; ?>
             </p>
-            <div class="actions" style="margin-top: 16px;">
-                <a href="change_password.php" class="btn btn-secondary">Change Password</a>
-                <a href="my_bookings.php" class="btn">Open Bookings</a>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- Edit form and recent bookings -->
+<!-- Edit form -->
 <div class="grid-two">
     <div class="card glass-card fade-card delay-3">
-        <h2>Edit Profile</h2>
+        <h2>Muokkaa profiilia</h2>
 
         <?php if ($errors): ?>
             <div class="message error">
@@ -251,45 +247,42 @@ include 'header.php';
         <form method="post" enctype="multipart/form-data">
             <div class="grid-two">
                 <div class="form-group">
-                    <label for="name">Name</label>
+                    <label for="name">Nimi</label>
                     <input type="text" id="name" name="name" value="<?php echo e($name); ?>">
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email">Sähköposti</label>
                     <input type="email" id="email" name="email" value="<?php echo e($email); ?>">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="avatar">Profile Photo</label>
-                <input type="file" id="avatar" name="avatar" accept=".jpg,.jpeg,.png,.gif,.webp,image/*">
-                <p class="small-text">Allowed: jpg, jpeg, png, gif, webp. Max size: 2 MB.</p>
+                <label for="avatar">Profiilikuva</label>
+                <input type="file" id="avatar" name="avatar">
             </div>
 
-            <button type="submit">Save Profile</button>
+            <button type="submit">Tallenna</button>
         </form>
     </div>
 
     <div class="card glass-card fade-card delay-3">
-        <h2>Recent Bookings</h2>
+        <h2>Viimeisimmät varaukset</h2>
+
         <?php if ($recent_bookings): ?>
             <div class="recent-bookings">
                 <?php foreach ($recent_bookings as $row): ?>
-                    <?php $status_data = get_booking_status_data($row['booking_date'], $row['end_time'], $row['status']); ?>
-                    <div class="recent-booking-item">
-                        <div>
-                            <strong><?php echo e($row['room_name']); ?></strong>
-                            <p class="small-text"><?php echo e($row['booking_date']); ?> | <?php echo e(substr($row['start_time'], 0, 5)); ?> - <?php echo e(substr($row['end_time'], 0, 5)); ?></p>
-                        </div>
-                        <span class="status-pill <?php echo e($status_data['class']); ?>">
-                            <?php echo e($status_data['label']); ?>
-                        </span>
+                    <div>
+                        <strong><?php echo e($row['room_name']); ?></strong>
+                        <p class="small-text">
+                            <?php echo e($row['booking_date']); ?> |
+                            <?php echo e(substr($row['start_time'], 0, 5)); ?> - <?php echo e(substr($row['end_time'], 0, 5)); ?>
+                        </p>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <p>No bookings yet.</p>
+            <p>Ei varauksia vielä</p>
         <?php endif; ?>
     </div>
 </div>

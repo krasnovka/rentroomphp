@@ -25,19 +25,19 @@ $message = get_message();
             <!-- Logo block -->
             <div class="logo-block">
                 <a href="index.php" class="logo">VARO</a>
-                <span class="logo-text">Smart Room Booking</span>
+                <span class="logo-text">Opiskelijoiden huonevaraus kirjastossa</span>
             </div>
 
             <!-- Main navigation -->
             <nav class="menu">
-                <a href="index.php" class="<?php echo $current_page === 'index.php' ? 'active' : ''; ?>">Home</a>
-                <a href="rooms.php" class="<?php echo $current_page === 'rooms.php' ? 'active' : ''; ?>">Rooms</a>
-                <a href="booking_calendar.php" class="<?php echo $current_page === 'booking_calendar.php' ? 'active' : ''; ?>">Calendar</a>
-                <a href="feedback.php" class="<?php echo $current_page === 'feedback.php' ? 'active' : ''; ?>">Feedback</a>
-                <a href="about.php" class="<?php echo $current_page === 'about.php' ? 'active' : ''; ?>">About</a>
+                <a href="index.php" class="<?php echo $current_page === 'index.php' ? 'active' : ''; ?>">Etusivu</a>
+                <a href="rooms.php" class="<?php echo $current_page === 'rooms.php' ? 'active' : ''; ?>">Huoneet</a>
+                <a href="booking_calendar.php" class="<?php echo $current_page === 'booking_calendar.php' ? 'active' : ''; ?>">Kalentari</a>
+                <a href="feedback.php" class="<?php echo $current_page === 'feedback.php' ? 'active' : ''; ?>">Palaute</a>
+                <a href="about.php" class="<?php echo $current_page === 'about.php' ? 'active' : ''; ?>">Info</a>
                 <?php if (is_logged_in()): ?>
-                    <a href="profile.php" class="<?php echo $current_page === 'profile.php' ? 'active' : ''; ?>">Profile</a>
-                    <a href="my_bookings.php" class="<?php echo $current_page === 'my_bookings.php' ? 'active' : ''; ?>">My Bookings</a>
+                    <a href="profile.php" class="<?php echo $current_page === 'profile.php' ? 'active' : ''; ?>">Profiili</a>
+                    <a href="my_bookings.php" class="<?php echo $current_page === 'my_bookings.php' ? 'active' : ''; ?>">Omat varaukset</a>
                     <?php if (is_admin()): ?>
                         <a href="admin_panel.php" class="<?php echo $current_page === 'admin_panel.php' ? 'active' : ''; ?>">Admin Panel</a>
                     <?php endif; ?>
@@ -46,8 +46,8 @@ $message = get_message();
                         <button type="submit">Logout</button>
                     </form>
                 <?php else: ?>
-                    <a href="login.php" class="<?php echo $current_page === 'login.php' ? 'active' : ''; ?>">Login</a>
-                    <a href="register.php" class="<?php echo $current_page === 'register.php' ? 'active' : ''; ?>">Register</a>
+                    <a href="login.php" class="<?php echo $current_page === 'login.php' ? 'active' : ''; ?>">Kirjaudu sisään</a>
+                    <a href="register.php" class="<?php echo $current_page === 'register.php' ? 'active' : ''; ?>">Rekisteröidy</a>
                 <?php endif; ?>
             </nav>
         </div>
