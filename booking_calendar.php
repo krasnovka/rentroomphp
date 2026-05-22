@@ -3,12 +3,11 @@
 
 require_once 'config.php';
 
-// Шпаргалка: берем выбранный месяц и комнату из адресной строки.
-// Если пользователь ничего не выбрал, показываем текущий месяц и все комнаты.
+// Get selected month and room from URL
 $month = trim($_GET['month'] ?? date('Y-m'));
 $room_id = isset($_GET['room_id']) ? (int)$_GET['room_id'] : 0;
 
-// Шпаргалка: проверяем формат месяца, чтобы в запрос не попали странные данные.
+// Validate month format
 if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
     $month = date('Y-m');
 }
@@ -27,17 +26,16 @@ $first_weekday = (int)$month_start->format('N');
 $prev_month = (clone $month_start)->modify('-1 month')->format('Y-m');
 $next_month = (clone $month_start)->modify('+1 month')->format('Y-m');
 
-// Шпаргалка: загружаем комнаты для выпадающего списка фильтра.
+// Load rooms for filter dropdown
 $sql = "SELECT id, name FROM rooms ORDER BY name ASC";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $rooms = $stmt->fetchAll();
 
-// Шпаргалка: загружаем активные бронирования за выбранный месяц.
+// Load bookings for selected month
 $params = [$first_day, $last_day];
 $room_filter_sql = '';
 
-// Шпаргалка: если выбрана конкретная комната, добавляем фильтр по room_id.
 if ($room_id > 0) {
     $room_filter_sql = " AND bookings.room_id = ?";
     $params[] = $room_id;
@@ -51,11 +49,12 @@ $sql = "SELECT bookings.*, rooms.name AS room_name, users.name AS user_name
         AND bookings.booking_date BETWEEN ? AND ?
         $room_filter_sql
         ORDER BY bookings.booking_date ASC, bookings.start_time ASC";
+
 $stmt = $conn->prepare($sql);
 $stmt->execute($params);
 $calendar_rows = $stmt->fetchAll();
 
-// Шпаргалка: группируем бронирования по датам, чтобы проще вывести календарь.
+// Group bookings by date
 $bookings_by_date = [];
 foreach ($calendar_rows as $row) {
     $bookings_by_date[$row['booking_date']][] = $row;
@@ -82,6 +81,7 @@ include 'header.php';
 
     <form method="get" class="calendar-filter">
         <div class="calendar-filter-row">
+
             <div class="form-group">
                 <label for="month">Kuukausi</label>
                 <input type="month" id="month" name="month" value="<?php echo e($month); ?>">
@@ -92,7 +92,8 @@ include 'header.php';
                 <select id="room_id" name="room_id">
                     <option value="0">Kaikki huoneet</option>
                     <?php foreach ($rooms as $room): ?>
-                        <option value="<?php echo e($room['id']); ?>" <?php echo $room_id === (int)$room['id'] ? 'selected' : ''; ?>>
+                        <option value="<?php echo e($room['id']); ?>"
+                            <?php echo $room_id === (int)$room['id'] ? 'selected' : ''; ?>>
                             <?php echo e($room['name']); ?>
                         </option>
                     <?php endforeach; ?>
@@ -103,15 +104,45 @@ include 'header.php';
                 <button type="submit">Näytä</button>
                 <a href="booking_calendar.php" class="btn btn-secondary">Reset</a>
             </div>
+
         </div>
     </form>
 </div>
 
 <!-- Month navigation -->
 <div class="calendar-toolbar fade-card delay-2">
-    <a class="btn btn-secondary" href="booking_calendar.php?month=<?php echo e($prev_month); ?>&room_id=<?php echo e($room_id); ?>">Edellinen</a>
-    <h2><?php echo e($month_start->format('F Y')); ?></h2>
-    <a class="btn btn-secondary" href="booking_calendar.php?month=<?php echo e($next_month); ?>&room_id=<?php echo e($room_id); ?>">Seuraava</a>
+    <a class="btn btn-secondary"
+       href="booking_calendar.php?month=<?php echo e($prev_month); ?>&room_id=<?php echo e($room_id); ?>">
+        Edellinen
+    </a>
+
+    <!-- FIXED MONTH NAMES (no encoding bugs) -->
+    <h2>
+        <?php
+        $months = [
+            1 => 'tammikuu',
+            2 => 'helmikuu',
+            3 => 'maaliskuu',
+            4 => 'huhtikuu',
+            5 => 'toukokuu',
+            6 => 'kesäkuu',
+            7 => 'heinäkuu',
+            8 => 'elokuu',
+            9 => 'syyskuu',
+            10 => 'lokakuu',
+            11 => 'marraskuu',
+            12 => 'joulukuu'
+        ];
+
+        $month_num = (int)$month_start->format('n');
+        echo $months[$month_num] . ' ' . $month_start->format('Y');
+        ?>
+    </h2>
+
+    <a class="btn btn-secondary"
+       href="booking_calendar.php?month=<?php echo e($next_month); ?>&room_id=<?php echo e($room_id); ?>">
+        Seuraava
+    </a>
 </div>
 
 <!-- Calendar grid -->
@@ -134,6 +165,7 @@ include 'header.php';
         $day_bookings = $bookings_by_date[$date] ?? [];
         $is_today = $date === date('Y-m-d');
         ?>
+
         <div class="calendar-day <?php echo $is_today ? 'calendar-today' : ''; ?>">
             <div class="calendar-day-head">
                 <strong><?php echo e($day); ?></strong>
@@ -145,9 +177,16 @@ include 'header.php';
             <?php if ($day_bookings): ?>
                 <div class="calendar-bookings">
                     <?php foreach ($day_bookings as $booking): ?>
-                        <a class="calendar-booking-chip" href="book_room.php?room_id=<?php echo e($booking['room_id']); ?>&date=<?php echo e($date); ?>">
-                            <span><?php echo e(substr($booking['start_time'], 0, 5)); ?>-<?php echo e(substr($booking['end_time'], 0, 5)); ?></span>
+                        <a class="calendar-booking-chip"
+                           href="book_room.php?room_id=<?php echo e($booking['room_id']); ?>&date=<?php echo e($date); ?>">
+
+                            <span>
+                                <?php echo e(substr($booking['start_time'], 0, 5)); ?> -
+                                <?php echo e(substr($booking['end_time'], 0, 5)); ?>
+                            </span>
+
                             <strong><?php echo e($booking['room_name']); ?></strong>
+
                             <?php if (is_admin()): ?>
                                 <small><?php echo e($booking['user_name']); ?></small>
                             <?php endif; ?>
@@ -159,7 +198,10 @@ include 'header.php';
             <?php endif; ?>
 
             <?php if (is_logged_in() && $room_id > 0): ?>
-                <a class="calendar-book-link" href="book_room.php?room_id=<?php echo e($room_id); ?>&date=<?php echo e($date); ?>">Varaa tämä päivä</a>
+                <a class="calendar-book-link"
+                   href="book_room.php?room_id=<?php echo e($room_id); ?>&date=<?php echo e($date); ?>">
+                    Varaa tämä päivä
+                </a>
             <?php endif; ?>
         </div>
     <?php endfor; ?>
