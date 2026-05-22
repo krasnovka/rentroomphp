@@ -3,21 +3,20 @@
 
 require_once 'auth.php';
 
-// Room id from GET or POST
 $room_id = isset($_GET['room_id']) ? (int)$_GET['room_id'] : (int)($_POST['room_id'] ?? 0);
+
 $booking_date = '';
 $start_time = '';
 $end_time = '';
 $errors = [];
 
-// Load selected room
+// LOAD ROOM
 if ($room_id <= 0) {
     set_message('Huonetta ei löytynyt.', 'error');
     redirect('rooms.php');
 }
 
-$sql = "SELECT * FROM rooms WHERE id = ?";
-$stmt = $conn->prepare($sql);
+$stmt = $conn->prepare("SELECT * FROM rooms WHERE id = ?");
 $stmt->execute([$room_id]);
 $room = $stmt->fetch();
 
@@ -26,87 +25,61 @@ if (!$room) {
     redirect('rooms.php');
 }
 
-// Date from calendar page
+// DEFAULT DATE
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    $date_from_get = trim($_GET['date'] ?? '');
-    $date_obj = DateTime::createFromFormat('Y-m-d', $date_from_get);
-
-    if ($date_from_get !== '' && $date_obj && $date_obj->format('Y-m-d') === $date_from_get) {
-        $booking_date = $date_from_get;
-    } else {
-        $booking_date = date('Y-m-d');
-    }
+    $booking_date = date('Y-m-d');
 }
 
-// Booking form submit
+// SUBMIT
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $booking_date = trim($_POST['booking_date'] ?? '');
     $start_time = trim($_POST['start_time'] ?? '');
     $end_time = trim($_POST['end_time'] ?? '');
 
-    if ($booking_date === '' || $start_time === '' || $end_time === '') {
+    if (!$booking_date || !$start_time || !$end_time) {
         $errors[] = 'All fields are required.';
     }
 
-    // Validate date and time format
-    $date_obj = DateTime::createFromFormat('Y-m-d', $booking_date);
-    $start_obj = DateTime::createFromFormat('H:i', $start_time);
-    $end_obj = DateTime::createFromFormat('H:i', $end_time);
+    $start = strtotime("$booking_date $start_time");
+    $end = strtotime("$booking_date $end_time");
 
-    if ($booking_date !== '' && (!$date_obj || $date_obj->format('Y-m-d') !== $booking_date)) {
-        $errors[] = 'Date format is invalid.';
+    if ($start && $end) {
+
+        if ($start < time()) $errors[] = 'You cannot book past time.';
+        if ($end <= $start) $errors[] = 'End must be later than start.';
+
+    } else {
+        $errors[] = 'Invalid date/time.';
     }
 
-    if ($start_time !== '' && !$start_obj) {
-        $errors[] = 'Start time format is invalid.';
-    }
-
-    if ($end_time !== '' && !$end_obj) {
-        $errors[] = 'End time format is invalid.';
-    }
-
-    // Check booking rules
     if (!$errors) {
-        $start_datetime = strtotime($booking_date . ' ' . $start_time);
-        $end_datetime = strtotime($booking_date . ' ' . $end_time);
-        $now = time();
 
-        if ($start_datetime === false || $end_datetime === false) {
-            $errors[] = 'Invalid date or time.';
-        } else {
-            if ($start_datetime < $now) {
-                $errors[] = 'You cannot book past time.';
-            }
-
-            if ($end_datetime <= $start_datetime) {
-                $errors[] = 'End time must be later than start time.';
-            }
-
-            if (($end_datetime - $start_datetime) > 12 * 60 * 60) {
-                $errors[] = 'Booking time is too long. Max duration is 12 hours.';
-            }
-        }
-    }
-
-    // Check conflicts and save booking
-    if (!$errors) {
-        $sql = "SELECT id FROM bookings
-                WHERE room_id = ?
-                AND booking_date = ?
-                AND status = 'active'
-                AND start_time < ?
-                AND end_time > ?";
-        $stmt = $conn->prepare($sql);
+        $stmt = $conn->prepare("
+            SELECT id FROM bookings
+            WHERE room_id = ?
+            AND booking_date = ?
+            AND status = 'active'
+            AND start_time < ?
+            AND end_time > ?
+        ");
         $stmt->execute([$room_id, $booking_date, $end_time, $start_time]);
-        $busy = $stmt->fetch();
 
-        if ($busy) {
+        if ($stmt->fetch()) {
             $errors[] = 'This time is already booked.';
         } else {
-            $sql = "INSERT INTO bookings (user_id, room_id, booking_date, start_time, end_time, status)
-                    VALUES (?, ?, ?, ?, ?, 'active')";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$_SESSION['user']['id'], $room_id, $booking_date, $start_time, $end_time]);
+
+            $stmt = $conn->prepare("
+                INSERT INTO bookings (user_id, room_id, booking_date, start_time, end_time, status)
+                VALUES (?, ?, ?, ?, ?, 'active')
+            ");
+            $stmt->execute([
+                $_SESSION['user']['id'],
+                $room_id,
+                $booking_date,
+                $start_time,
+                $end_time
+            ]);
 
             set_message('Booking created successfully.', 'success');
             redirect('my_bookings.php');
@@ -114,91 +87,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Busy slots for selected date
-$busy_date = $booking_date !== '' ? $booking_date : date('Y-m-d');
-$busy_date_obj = DateTime::createFromFormat('Y-m-d', $busy_date);
-
-if (!$busy_date_obj || $busy_date_obj->format('Y-m-d') !== $busy_date) {
-    $busy_date = date('Y-m-d');
-}
-
-$sql = "SELECT bookings.*, users.name AS user_name
-        FROM bookings
-        INNER JOIN users ON bookings.user_id = users.id
-        WHERE bookings.room_id = ?
-        AND bookings.booking_date = ?
-        AND bookings.status = 'active'
-        ORDER BY bookings.start_time ASC";
-$stmt = $conn->prepare($sql);
-$stmt->execute([$room_id, $busy_date]);
+// BUSY SLOTS
+$stmt = $conn->prepare("
+    SELECT bookings.*, users.name AS user_name
+    FROM bookings
+    JOIN users ON bookings.user_id = users.id
+    WHERE room_id = ?
+    AND booking_date = ?
+    AND status = 'active'
+    ORDER BY start_time ASC
+");
+$stmt->execute([$room_id, $booking_date]);
 $busy_slots = $stmt->fetchAll();
 
 include 'header.php';
 ?>
 
-<!-- Page heading -->
+<!-- HEADER -->
 <div class="page-intro fade-card">
     <span class="section-tag">Varaus</span>
-    <h1>Varaa huone</h1>
-    <p>Valitse päivämäärä ja aika varauksellesi ja vahvista varaus.</p>
+    <h1><?php echo e($room['name']); ?></h1>
 </div>
 
-<!-- Room info and booking form -->
+<!-- LAYOUT -->
 <div class="booking-layout">
+
+    <!-- LEFT SIDE -->
     <div class="card glass-card fade-card">
-        <h2><?php echo e($room['name']); ?></h2>
-        <div class="room-summary">
+
+        <!-- IMAGE -->
+        <div style="width:100%;height:260px;border-radius:14px;overflow:hidden;background:#f3f6fa;">
+            <?php if (!empty($room['image_url'])): ?>
+                <img src="<?php echo e($room['image_url']); ?>"
+                     style="width:100%;height:100%;object-fit:cover;">
+            <?php else: ?>
+                <div style="display:flex;align-items:center;justify-content:center;height:100%;">
+                    No image
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="room-summary" style="margin-top:15px;">
             <div class="room-summary-item">
                 <span>Kuvaus</span>
                 <strong><?php echo e($room['description']); ?></strong>
             </div>
+
             <div class="room-summary-item">
                 <span>Henkilömäärä</span>
                 <strong><?php echo e($room['capacity']); ?> henkilöä</strong>
             </div>
-            <div class="room-summary-item">
-                <span>Varauksen säännöt</span>
-                <strong>Valitse tuleva päivämäärä ja aika. Loppuajan täytyy olla myöhemmin kuin alkuajan.</strong>
-            </div>
         </div>
 
-        <!-- Busy times for this room -->
+        <!-- CALENDAR BUTTON -->
+        <div style="margin-top:15px;">
+            <a class="btn btn-secondary"
+               href="booking_calendar.php?room_id=<?php echo e($room_id); ?>">
+                Kalenteri
+            </a>
+        </div>
+
+        <!-- BUSY SLOTS (RESTORED) -->
         <div class="busy-box">
-    <div class="busy-box-head">
-        <div>
-            <h3>Varatut ajat</h3>
-            <p class="small-text">Valittu päivä: <?php echo e($busy_date); ?></p>
-        </div>
-        <a href="booking_calendar.php?room_id=<?php echo e($room_id); ?>&month=<?php echo e(substr($busy_date, 0, 7)); ?>" class="btn btn-secondary">Kalenteri</a>
-    </div>
 
-    <form method="get" class="mini-date-form">
-        <input type="hidden" name="room_id" value="<?php echo e($room_id); ?>">
-        <input type="date" name="date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo e($busy_date); ?>">
-        <button type="submit">Tarkista</button>
-  </form>
-
-<?php if ($busy_slots): ?>
-    <div class="busy-slots">
-        <?php foreach ($busy_slots as $slot): ?>
-            <div class="busy-slot">
-                <strong><?php echo e(substr($slot['start_time'], 0, 5)); ?>-<?php echo e(substr($slot['end_time'], 0, 5)); ?></strong>
-                <?php if (is_admin()): ?>
-                    <span><?php echo e($slot['user_name']); ?></span>
-                <?php else: ?>
-                    <span>Varattu</span>
-                <?php endif; ?>
+            <div class="busy-box-head">
+                <div>
+                    <h3>Varatut ajat</h3>
+                    <p class="small-text"><?php echo e($booking_date); ?></p>
+                </div>
             </div>
-        <?php endforeach; ?>
-    </div>
-<?php else: ?>
-    <p class="calendar-free-note">Ei varauksia tälle huoneelle tälle päivälle.</p>
-<?php endif; ?>
-</div>
-</div>
 
+            <?php if ($busy_slots): ?>
+                <div class="busy-slots">
+                    <?php foreach ($busy_slots as $slot): ?>
+                        <div class="busy-slot">
+                            <strong>
+                                <?php echo e(substr($slot['start_time'],0,5)); ?>
+                                -
+                                <?php echo e(substr($slot['end_time'],0,5)); ?>
+                            </strong>
+
+                            <span>
+                                <?php echo is_admin() ? e($slot['user_name']) : 'Varattu'; ?>
+                            </span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="calendar-free-note">Ei varauksia tälle päivälle.</p>
+            <?php endif; ?>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
     <div class="card glass-card fade-card delay-1">
-        <h2>Varauslomake</h2>
+
+        <h2>Varaa aika</h2>
 
         <?php if ($errors): ?>
             <div class="message error">
@@ -212,27 +198,30 @@ include 'header.php';
             <input type="hidden" name="room_id" value="<?php echo e($room_id); ?>">
 
             <div class="form-group">
-                <label for="booking_date">Date</label>
-                <input type="date" id="booking_date" name="booking_date" min="<?php echo date('Y-m-d'); ?>" value="<?php echo e($booking_date); ?>" required>
+                <label>Päivämäärä</label>
+                <input type="date" name="booking_date"
+                       value="<?php echo e($booking_date); ?>"
+                       min="<?php echo date('Y-m-d'); ?>" required>
             </div>
 
             <div class="grid-two">
                 <div class="form-group">
-                    <label for="start_time">Aloitusaika</label>
-                    <input type="time" id="start_time" name="start_time" value="<?php echo e($start_time); ?>" required>
+                    <label>Aloitus</label>
+                    <input type="time" name="start_time" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="end_time">Päättymisaika</label>
-                    <input type="time" id="end_time" name="end_time" value="<?php echo e($end_time); ?>" required>
+                    <label>Loppu</label>
+                    <input type="time" name="end_time" required>
                 </div>
             </div>
 
             <div class="actions">
-                <button type="submit">Tee varaus</button>
+                <button type="submit">Varaa</button>
                 <a href="rooms.php" class="btn btn-secondary">Takaisin</a>
             </div>
         </form>
+
     </div>
 </div>
 

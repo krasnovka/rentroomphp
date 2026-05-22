@@ -25,7 +25,7 @@ $message = get_message();
             <!-- Logo block -->
             <div class="logo-block">
                 <a href="index.php" class="logo">VARO</a>
-                <span class="logo-text">Opiskelijoiden huonevaraus kirjastossa</span>
+                <span class="logo-text">Huonevaraus kirjastossa</span>
             </div>
 
             <!-- Main navigation -->

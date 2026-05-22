@@ -228,6 +228,19 @@ a:hover {
     box-shadow: var(--shadow-soft);
 }
 
+
+/* ===== CONTENT ABOVE BACKGROUND ===== */
+.hero-text,
+.hero-side {
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== decorative circle (оставил как было) ===== */
+.hero-block > * {
+    position: relative;
+}
+
 /* ===== Small Stat Cards ===== */
 .mini-card {
     padding: 16px;
@@ -1086,4 +1099,63 @@ tr:hover td {
 
 .feedback-item p {
     margin-bottom: 0;
+}
+
+/* ===== ROOM CARDS (NEW IMAGE VIEW) ===== */
+
+.room-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.room-card {
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: #fff;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+}
+
+.room-image {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: #f3f6fa;
+}
+
+.room-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.room-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-soft);
+    font-weight: 600;
+}
+
+.room-info {
+    padding: 14px 16px;
+    display: grid;
+    gap: 10px;
+}
+
+.room-info h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.room-capacity {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 600;
 }

@@ -10,7 +10,7 @@ include 'header.php';
 <div class="page-intro fade-card">
     <span class="section-tag">Info</span>
     <h1>Info VARO</h1>
-    <p> Varo opiskelijoiden huonevaraus kirjastossa</p>
+    <p> Varo huonevaraus kirjastossa</p>
 </div>
 
 <!-- Main about blocks -->
@@ -31,7 +31,7 @@ include 'header.php';
 <div class="card glass-card fade-card delay-3">
     <h2>Yhteystiedot</h2>
     <p><strong>Projektin nimi:</strong> VARO</p>
-    <p><strong>Tyyppi:</strong> Opiskelijoiden huonevarausjärjestelmä</p>
+    <p><strong>Tyyppi:</strong> Huonevarausjärjestelmä</p>
 </div>
 
 <?php include 'footer.php'; ?>

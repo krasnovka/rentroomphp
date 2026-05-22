@@ -33,7 +33,7 @@ include 'header.php';
 <div class="hero-block">
     <div class="hero-text">
         <span class="hero-badge">VARO</span>
-        <h1>Opiskelijoiden huonevarausjärjestelmä kirjastossa</h1>
+        <h1>Huonevarausjärjestelmä kirjastossa</h1>
         <p>Katso huoneet, valitse aika ja tee varaukset helposti ja nopeasti.</p>
 
         <div class="actions">
