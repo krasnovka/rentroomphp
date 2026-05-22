@@ -21,22 +21,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // validate required fields
     if ($name === '' || $email === '' || $password === '' || $confirm_password === '') {
-        $errors[] = 'All fields are required.';
+        $errors[] = 'Kaikki kentät ovat pakollisia.';
     }
 
     // validate email format
     if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'Enter a valid email.';
+        $errors[] = 'Anna kelvollinen sähköposti.';
     }
 
     // validate password length
     if ($password !== '' && strlen($password) < 6) {
-        $errors[] = 'Password must be at least 6 characters.';
+        $errors[] = 'Salasanan täytyy olla vähintään 6 merkkiä.';
     }
 
     // check password confirmation
     if ($password !== $confirm_password) {
-        $errors[] = 'Passwords do not match.';
+        $errors[] = 'Salasanat eivät täsmää.';
     }
 
     if (!$errors) {
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         if ($user) {
-            $errors[] = 'This email is already registered.';
+            $errors[] = 'Tämä sähköposti on jo rekisteröity.';
         } else {
 
             // hash password
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare($sql);
             $stmt->execute([$name, $email, $hash]);
 
-            set_message('Registration completed. You can log in now.', 'success');
+            set_message('Rekisteröinti onnistui. Voit nyt kirjautua sisään.', 'success');
             redirect('login.php');
         }
     }
@@ -75,14 +75,14 @@ include 'header.php';
 
     <!-- intro section -->
     <div class="page-intro fade-card">
-        <span class="section-tag">New Account</span>
-        <h1>Create your VARO account</h1>
-        <p>Register to book rooms, manage your schedule and open your profile.</p>
+        <span class="section-tag">Uusi tili</span>
+        <h1>Luo VARO-tili</h1>
+        <p>Rekisteröidy varataksesi huoneita, hallitaksesi aikatauluasi ja avataksesi profiilisi.</p>
     </div>
 
     <!-- register form -->
     <div class="card glass-card fade-card delay-1 auth-card">
-        <h2>Register</h2>
+        <h2>Rekisteröidy</h2>
 
         <?php if ($errors): ?>
             <div class="message error">
@@ -96,31 +96,31 @@ include 'header.php';
 
             <div class="grid-two">
                 <div class="form-group">
-                    <label for="name">Name</label>
+                    <label for="name">Nimi</label>
                     <input type="text" id="name" name="name" value="<?php echo e($name); ?>">
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email">Sähköposti</label>
                     <input type="email" id="email" name="email" value="<?php echo e($email); ?>">
                 </div>
             </div>
 
             <div class="grid-two">
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Salasana</label>
                     <input type="password" id="password" name="password">
                 </div>
 
                 <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
+                    <label for="confirm_password">Vahvista salasana</label>
                     <input type="password" id="confirm_password" name="confirm_password">
                 </div>
             </div>
 
             <div class="actions">
-                <button type="submit">Register</button>
-                <a href="login.php" class="btn btn-secondary">Login</a>
+                <button type="submit">Rekisteröidy</button>
+                <a href="login.php" class="btn btn-secondary">Kirjaudu sisään</a>
             </div>
 
         </form>
