@@ -147,7 +147,7 @@ include 'header.php';
             </a>
         </div>
 
-        <!-- BUSY SLOTS (RESTORED) -->
+        <!-- BUSY SLOTS -->
         <div class="busy-box">
 
             <div class="busy-box-head">

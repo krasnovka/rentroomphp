@@ -28,8 +28,13 @@ $user_count = (int)$stmt->fetchColumn();
 
 include 'header.php';
 ?>
-
 <!-- hero section -->
+
+<div class="etusivu-hero">
+    <img src="uploads/images/varo logo.png" class="etusivu-kuva">
+
+</div>
+ 
 <div class="hero-block">
     <div class="hero-text">
         <span class="hero-badge">VARO</span>
