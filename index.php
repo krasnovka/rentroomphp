@@ -157,4 +157,30 @@ include 'header.php';
     <?php endif; ?>
 </div>
 
+
+<!-- library images section -->
+<div class="card fade-card delay-3">
+    <h2>Kuvia kirjastosta</h2>
+
+    <div class="library-gallery">
+
+        <a href="uploads/images/kirjasto.jpg" target="_blank">
+            <img src="uploads/images/kirjasto.jpg" alt="Kirjasto">
+        </a>
+
+        <a href="uploads/images/kirjasto2.jpg" target="_blank">
+            <img src="uploads/images/kirjasto2.jpg" alt="Huone">
+        </a>
+
+        <a href="uploads/images/kirjasto3.jpg" target="_blank">
+            <img src="uploads/images/kirjasto3.jpg" alt="Opiskelutila">
+        </a>
+
+    <a href="uploads/images/kirjasto4.jpg" target="_blank">
+            <img src="uploads/images/kirjasto4.jpg" alt="Opiskelutila">
+        </a>
+
+    </div>
+</div>
+
 <?php include 'footer.php'; ?>

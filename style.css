@@ -1096,3 +1096,34 @@ tr:hover td {
     object-fit: cover;
     object-position: center;
 }
+
+
+/* ===== Library Gallery ===== */
+
+.library-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.library-gallery img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease;
+}
+
+.library-gallery img:hover {
+    transform: scale(1.02);
+}
+
+/* mobile */
+@media (max-width: 768px) {
+    .library-gallery {
+        grid-template-columns: 1fr;
+    }
+}
